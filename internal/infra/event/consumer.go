@@ -2,12 +2,11 @@ package event
 
 import (
 	"context"
-	"fmt"
-	"time"
+	"encoding/json"
+	"log/slog"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
-	"github.com/google/uuid"
 	"github.com/tbtec/tremligeiro/internal/dto"
 )
 
@@ -38,40 +37,31 @@ func (consumer *ConsumerService) ConsumeMessage(ctx context.Context) (*dto.Order
 		// return nil, err
 	}
 
-	fmt.Println("Received message:", resp)
-
-	// if len(resp.Messages) == 0 {
-	// 	return nil, nil // No messages available
-	// }
-
-	// Deserialize the message body to Order
-	// var order dto.Order
-	// err = json.Unmarshal([]byte(*resp.Messages[0].Body), &order)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// slog.InfoContext(ctx, "Received message", "MessageId", *resp.Messages[0].MessageId)
-	// slog.InfoContext(ctx, "Received message", "body", order)
-
-	// // Delete the message from the queue
-	// out, delErr := consumer.Client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
-	// 	QueueUrl:      &consumer.QueueUrl,
-	// 	ReceiptHandle: resp.Messages[0].ReceiptHandle,
-	// })
-	// if delErr != nil {
-	// 	slog.ErrorContext(ctx, "Error deleting message", "error", delErr)
-	// }
-	// slog.InfoContext(ctx, "Message deleted", "recepit", *&out.ResultMetadata)
-
-	uuid := uuid.New()
-	order2 := dto.Order{
-		ID:        uuid.String(),
-		Status:    "PENDING",
-		CreatedAt: time.Now(),
+	if len(resp.Messages) == 0 {
+		return nil, nil // No messages available
 	}
 
-	return &order2, nil
+	// Deserialize the message body to Order
+	var order dto.Order
+	err = json.Unmarshal([]byte(*resp.Messages[0].Body), &order)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.InfoContext(ctx, "Received message", "MessageId", *resp.Messages[0].MessageId)
+	slog.InfoContext(ctx, "Received message", "body", order)
+
+	// Delete the message from the queue
+	out, delErr := consumer.Client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
+		QueueUrl:      &consumer.QueueUrl,
+		ReceiptHandle: resp.Messages[0].ReceiptHandle,
+	})
+	if delErr != nil {
+		slog.ErrorContext(ctx, "Error deleting message", "error", delErr)
+	}
+	slog.InfoContext(ctx, "Message deleted", "recepit", *&out.ResultMetadata)
+
+	return &order, nil
 }
 
 func (consumer *ConsumerService) DeleteMessage(ctx context.Context, receiptHandle string) error {
