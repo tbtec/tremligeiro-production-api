@@ -42,10 +42,11 @@ func (producer *ProducerService) PublishMessage(ctx context.Context, message int
 
 	output, err := producer.Client.Publish(ctx, input)
 
-	slog.InfoContext(ctx, "Message published", "recepit", output.MessageId)
 	if err != nil {
 		return err
 	}
+
+	slog.InfoContext(ctx, "Message published", "recepit", output.MessageId)
 
 	return nil
 }

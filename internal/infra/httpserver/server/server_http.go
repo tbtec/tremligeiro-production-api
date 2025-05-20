@@ -35,7 +35,7 @@ func New(container *container.Container, config env.Config) *HTTPServer {
 	baseRouter := app.Group("/api/v1")
 
 	//Order Routes
-	baseRouter.Post("/order/:id/:status/producer", adapt(controller.NewProducerProductionRestController(container)))
+	baseRouter.Post("/production/:id/:status", adapt(controller.NewProducerProductionRestController(container)))
 
 	app.Use(middleware.NewNotFound())
 
