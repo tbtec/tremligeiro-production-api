@@ -8,18 +8,18 @@ import (
 	"github.com/tbtec/tremligeiro/internal/dto"
 )
 
-type UscOrderCheckOut struct {
+type UscOrderProducer struct {
 	orderProducerGateway *gateway.OrderProducerGateway
 }
 
 func NewUseCaseMessageProduction(orderProducerGateway *gateway.OrderProducerGateway,
-) *UscOrderCheckOut {
-	return &UscOrderCheckOut{
+) *UscOrderProducer {
+	return &UscOrderProducer{
 		orderProducerGateway: orderProducerGateway,
 	}
 }
 
-func (usc *UscOrderCheckOut) Production(ctx context.Context, order dto.Order) (dto.Order, error) {
+func (usc *UscOrderProducer) Production(ctx context.Context, order dto.Order) (dto.Order, error) {
 	slog.InfoContext(ctx, "Intiating message production", "orderId", order.ID)
 
 	_ = usc.orderProducerGateway.PublishMessage(ctx, order)

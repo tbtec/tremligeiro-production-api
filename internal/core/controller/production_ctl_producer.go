@@ -10,7 +10,7 @@ import (
 )
 
 type ProducerProductionController struct {
-	usc *usecase.UscOrderCheckOut
+	usc *usecase.UscOrderProducer
 }
 
 func NewProducerProductionController(container *container.Container) *ProducerProductionController {
