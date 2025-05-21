@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -29,12 +30,15 @@ func NewConsumerService(QueueUrl string, config aws.Config) IConsumerService {
 
 func (consumer *ConsumerService) ConsumeMessage(ctx context.Context) (*dto.Order, error) {
 	// Receive a message from the queue
+	fmt.Println("Receive a message from the queue") //TODO remover
 	resp, err := consumer.Client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 		QueueUrl:            &consumer.QueueUrl,
 		MaxNumberOfMessages: 1,
 	})
+	fmt.Println("Message received") //TODO remover
 	if err != nil {
-		// return nil, err
+		fmt.Println(err.Error()) //TODO remover
+		return nil, err
 	}
 
 	if len(resp.Messages) == 0 {
