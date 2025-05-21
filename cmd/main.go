@@ -27,22 +27,28 @@ func main() {
 
 func run(ctx context.Context) error {
 
+	slog.InfoContext(ctx, "LoadEnvConfig...")
 	config, err := env.LoadEnvConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	slog.InfoContext(ctx, "New Container...")
 	container, err := container.New(config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	slog.InfoContext(ctx, "Starting Container...")
 	errStart := container.Start(ctx)
 	if errStart != nil {
 		log.Fatal(err)
 	}
 
+	slog.InfoContext(ctx, "New Server...")
 	httpServer := server.New(container, config)
+
+	slog.InfoContext(ctx, "New Event Server...")
 	eventServer := eventserver.NewEventServer(container, config)
 
 	slog.InfoContext(ctx, "Starting Event Server...")
