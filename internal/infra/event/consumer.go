@@ -29,15 +29,15 @@ func NewConsumerService(QueueUrl string, config aws.Config) IConsumerService {
 }
 
 func (consumer *ConsumerService) ConsumeMessage(ctx context.Context) (*dto.Order, error) {
+
 	// Receive a message from the queue
-	fmt.Println("Receive a message from the queue") //TODO remover
 	resp, err := consumer.Client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 		QueueUrl:            &consumer.QueueUrl,
 		MaxNumberOfMessages: 1,
 	})
-	fmt.Println("Message received") //TODO remover
+
 	if err != nil {
-		fmt.Println(err.Error()) //TODO remover
+		fmt.Println(err.Error())
 		return nil, err
 	}
 
